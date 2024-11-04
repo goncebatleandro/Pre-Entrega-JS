@@ -61,7 +61,7 @@
 @media (300px < width < 1024px) {
   .bannerindex {
     height: calc(100vh - 100px);
-    background-image: url(/IMG/barber_background_main.jpg);
+    background-image: url(../IMG/barber_background_main.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
