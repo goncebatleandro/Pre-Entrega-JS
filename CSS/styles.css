@@ -33,7 +33,7 @@
 
   /* MAIN INICIO */
 .bannerindex {
-    background-image: url(/IMG/barber_background_main.jpg);
+    background-image: url(../IMG/barber_background_main.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
