@@ -9,7 +9,7 @@
 
 /* HEADER */
 .header {
-    background-color: #45262a;
+    background-color: #381aa5;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -33,7 +33,7 @@
 
   /* MAIN INICIO */
 .bannerindex {
-    background-image: url(../IMG/barber_background_main.jpg);
+    background-image: url(../IMG/IMC.jpeg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -61,7 +61,7 @@
 @media (300px < width < 1024px) {
   .bannerindex {
     height: calc(100vh - 100px);
-    background-image: url(../IMG/barber_background_main.jpg);
+    background-image: url(../IMG/IMC.jpeg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
