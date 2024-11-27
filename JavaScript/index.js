@@ -1,9 +1,8 @@
-// Objeto Persona
 class Persona {
     constructor(nombre, peso, altura) {
         this.nombre = nombre;
-        this.peso = peso; // en kg
-        this.altura = altura; // en metros
+        this.peso = peso;
+        this.altura = altura;
     }
 
     calcularIMC() {
@@ -26,6 +25,22 @@ class Persona {
     }
 }
 
+function mostrarAlimentosRecomendados() {
+    const alimentos = [
+        { nombre: "Manzana", calorias: 52, nutrientes: "Fibra, Vitamina C" },
+        { nombre: "Pollo", calorias: 165, nutrientes: "Proteína, B6" },
+        { nombre: "Brócoli", calorias: 55, nutrientes: "Fibra, Vitamina K" },
+        { nombre: "Arroz integral", calorias: 111, nutrientes: "Carbohidratos complejos, Magnesio" },
+        { nombre: "Almendras", calorias: 576, nutrientes: "Grasas saludables, Vitamina E" }
+    ];
+
+    const listaAlimentos = alimentos.map(alimento =>
+        `${alimento.nombre} - Calorías: ${alimento.calorias} kcal, Nutrientes: ${alimento.nutrientes}`
+    ).join('\n');
+
+    alert(`Alimentos Recomendados:\n\n${listaAlimentos}`);
+}
+
 function obtenerDatosPersona() {
     const nombre = prompt("Ingrese su nombre");
     const peso = parseFloat(prompt("Ingrese su peso en kg"));
@@ -44,12 +59,14 @@ function mostrarResultadosNutricionales() {
 }
 
 // INICIO
-const opciones = "1- Calcular IMC y Calorías, 2- Salir";
+const opciones = "1- Calcular IMC y Calorías\n2- Ver alimentos recomendados\n3- Salir";
 let opcion = parseInt(prompt(opciones));
 
-while (opcion !== 2) {
+while (opcion !== 3) {
     if (opcion === 1) {
         mostrarResultadosNutricionales();
+    } else if (opcion === 2) {
+        mostrarAlimentosRecomendados();
     } else {
         alert("Opción inválida");
     }
