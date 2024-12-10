@@ -1,77 +1,197 @@
-class Persona {
-    constructor(nombre, peso, altura) {
-        this.nombre = nombre;
-        this.peso = peso;
-        this.altura = altura;
-    }
+// 1
+let cantidad = 1;
+let cart = [];
 
-    calcularIMC() {
-        return (this.peso / (this.altura ** 2)).toFixed(2);
-    }
+// 2
+async function loadProducts() {
+    try {
+        const response = await fetch ('../productos.json');
+        const productos = await response.json();
+        displayProductos(productos);
+    } catch (error) {
+        console.error('Error al cargar los productos:', error);
 
-    calcularKcalDiarias() {
-        return (22 * this.peso).toFixed(2);
-    }
-
-    obtenerRecomendacionAlimentos() {
-        const imc = this.calcularIMC();
-        if (imc < 18.5) {
-            return "Recomendación: Aumenta tu ingesta calórica con alimentos ricos en proteínas y carbohidratos saludables (arroz, pasta, frutas, etc.).";
-        } else if (imc >= 18.5 && imc <= 24.9) {
-            return "Recomendación: Mantén una dieta balanceada con frutas, verduras, proteínas magras y granos integrales.";
-        } else {
-            return "Recomendación: Reduce los azúcares y grasas, e incluye más verduras, proteínas magras y fibras en tu dieta.";
-        }
     }
 }
-
-function mostrarAlimentosRecomendados() {
-    const alimentos = [
-        { nombre: "Manzana", calorias: 52, nutrientes: "Fibra, Vitamina C" },
-        { nombre: "Pollo", calorias: 165, nutrientes: "Proteína, B6" },
-        { nombre: "Brócoli", calorias: 55, nutrientes: "Fibra, Vitamina K" },
-        { nombre: "Arroz integral", calorias: 111, nutrientes: "Carbohidratos complejos, Magnesio" },
-        { nombre: "Almendras", calorias: 576, nutrientes: "Grasas saludables, Vitamina E" }
-    ];
-
-    const listaAlimentos = alimentos.map(alimento =>
-        `${alimento.nombre} - Calorías: ${alimento.calorias} kcal, Nutrientes: ${alimento.nutrientes}`
-    ).join('\n');
-
-    alert(`Alimentos Recomendados:\n\n${listaAlimentos}`);
+// 3
+function  displayProductos(productos) {
+    const productList = document.querySelector('.cards');
+    productos.forEach(product => { 
+        const article = document.createElement('article');
+        article.classList.add('cards__card');
+        article.innerHTML = `
+            <div class="card__img">
+                <img src="${product.imagen}" alt="${product.nombre}">
+            </div>
+            <div class="card_descripcion">
+                <h4 class="descripcion_categoria">${product.categoria}</h4>
+                <h2 class="descripcion_nombre">${product.nombre}</h2>
+                <p class="descripcion_precio">$${product.precio}</p>
+            </div>
+            <button onclick="addToCart(${product.id}, this)" class="card__btn-shop">
+               <i class="ri-shopping-bag-line"></i>
+                Añadir al carrito
+            </button>
+            <div class="card__cantidad" id="card__cantidad-${product.id}">
+                <button class="cantidad__btn-remove" onclick="decrementarProducto(${product.id})">
+                   <i class="ri-close-circle-line"></i>
+               </button>
+                <div class="cantidad__numero" id="cantidad-${product.id}" data-id="${product.id}">
+                    1
+                </div>
+                 <button class="cantidad__btn-add" onclick="incrementarProducto(${product.id})">
+                    <i class="ri-add-circle-line"></i>
+                </button>
+            </div>
+        `;
+        productList.appendChild(article);
+    });
 }
 
-function obtenerDatosPersona() {
-    const nombre = prompt("Ingrese su nombre");
-    const peso = parseFloat(prompt("Ingrese su peso en kg"));
-    const altura = parseFloat(prompt("Ingrese su altura en metros"));
+// 4
+function addToCart(productId, buttonElement) {
+    const cantidadElement = document.getElementById(`cantidad-${productId}`);
+    const quantity = parseInt(cantidadElement.textContent, 10);
 
-    return new Persona(nombre, peso, altura);
-}
-
-function mostrarResultadosNutricionales() {
-    const persona = obtenerDatosPersona();
-    const imc = persona.calcularIMC();
-    const kcalDiarias = persona.calcularKcalDiarias();
-    const recomendacion = persona.obtenerRecomendacionAlimentos();
-
-    alert(`Nombre: ${persona.nombre}\nIMC: ${imc}\nCalorías Diarias Recomendadas: ${kcalDiarias} kcal\n${recomendacion}`);
-}
-
-// INICIO
-const opciones = "1- Calcular IMC y Calorías\n2- Ver alimentos recomendados\n3- Salir";
-let opcion = parseInt(prompt(opciones));
-
-while (opcion !== 3) {
-    if (opcion === 1) {
-        mostrarResultadosNutricionales();
-    } else if (opcion === 2) {
-        mostrarAlimentosRecomendados();
+    const existingProduct = cart.find(item => item.id === productId);
+    
+    if (existingProduct) {
+        existingProduct.quantity += quantity;
     } else {
-        alert("Opción inválida");
+        fetch('../productos.json')    
+        .then(response => response.json())
+        .then(productos => {
+            const product = productos.find(p => p.id === productId);
+            if (product) {
+                cart.push({...product, quantity: quantity});
+                displayCart();
+            }
+        })
+        .catch(error => console.error('Error al obtener el producto', error));
     }
 
-    opcion = parseInt(prompt(opciones));
+    buttonElement.style.display = 'none';
+
+    const cantidadContainer = buttonElement.nextElementSibling;
+    cantidadContainer.style.display = 'flex';
+
+    const cardImgElement = buttonElement.closest('.cards_card').querySelector('.card_img');
+    cardImgElement.classList.add('active');
 }
 
-alert("Gracias por usar la calculadora nutricional");
+// 5
+    function incrementarProducto(productId) {
+        const cantidadElemento = document.getElementById(`cantidad-${productId}`);
+        let cantidad = parseInt(cantidadElemento.textContent, 10);
+        cantidad++;
+        cantidadElemento.textContent = cantidad;
+
+        const producto = cart.find(item => item.id === productId);
+        if (producto) {
+            producto.quantity = cantidad;
+        }
+
+        displayCart();
+    }
+
+// 6
+    function decrementarProducto(productId) {
+        const cantidadElemento = document.getElementById(`cantidad-${productId}`);
+        let cantidad = parseInt(cantidadElemento.textContent, 10);
+
+        if (cantidad > 1) {
+            cantidad--;
+            cantidadElemento.textContent = cantidad;
+        } else {
+            cantidad = 0;
+
+            cart = cart.filter(item => item.id !== productId);
+
+            const cantidadContainer = cantidadElemento.parentElement;
+            const buttonElement = cantidadContainer.previousElementSibling;
+            cantidadContainer.style.display = 'none';
+            buttonElement.style.display = 'inline-block';
+
+            const cardImgElement = buttonElement.closest(`.cards__card`).querySelector(`.card__img`);
+            cardImgElement.classList.remove('active');
+        }
+
+        const producto = cart.find(item => item.id === productId);
+        if (producto) {
+            producto.quantity = cantidad;
+        }
+
+        displayCart();
+    }
+// 7
+    function removeFromCart(productId) {
+        cart = cart.filter(item => item.id !== productId);
+
+        const cantidadContainer = document.getElementById(`cantidad-${productId}`).parentElement;
+        const buttonElement = cantidadContainer.previousElementSibling;
+        cantidadContainer.style.display = 'none';
+        buttonElement.style.display = 'inline-block';
+
+        const cantidadElemento = document.getElementById(`cantidad-${productId}`);
+        cantidadElemento.textContent = 1;
+
+        const cardImgElement = buttonElement.closest('.cards__card').querySelector('.card__img');
+        cardImgElement.classList.remove('active');
+
+        displayCart();
+    }  
+
+// 8
+    function displayCart() {
+        const cartList = document.querySelector('.cart-list__items');
+        const cartHeader = document.querySelector('.cart-list h2');
+        cartList.innerHTML = '';  
+
+        let total = 0;
+
+        if (cart.length === 0) { 
+            cartList.innerHTML = `
+                <div class="items__img">
+                    <img src="../assets/images/barrita.png" alt="Barrita">
+                </div>
+                <p> Tus suplementos aparecerán acá </p>
+            `;
+        } else {
+            cart.forEach(item => {
+                total += item.precio * item.quantity;
+                cartList.innerHTML += `
+                    <div class="items__item">
+                            <h4>${item.nombre}</h4>
+                        <div class="item__detalles">
+                                <p>${item.quantity} x <span>${item.precio.toFixed(2)}</span></p>
+                                <p>$$${(item.precio * item.quantity).toFixed(2)}</p>
+                            <button onclick="removeFromCart(${item.id})">
+                                <i class="ri-close-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const totalContainer = document.createElement('div');
+            totalContainer.classList.add('item__total');
+            totalContainer.innerHTML = `
+                <div>
+                    <span>Total a pagar</span>
+                     <span class="total__monto">${total.toFixed(2)}</span>
+                </div>
+                <button class="btn" id="btn-checkout">Realizar pedido</button>
+            `;
+            cartList.appendChild(totalContainer);
+        }
+
+        const checkoutButton = document.getElementById('btn-checkout');
+        if (checkoutButton) {
+            // checkoutButton.addEventListener('click', mostrarModalPedido);
+        }
+
+        const totalItems = cart.reduce((acc,item) => acc + item.quantity, 0);
+        cartHeader.textContent = `Tu carrito (${totalItems})`;
+    }
+// 
+loadProducts();
