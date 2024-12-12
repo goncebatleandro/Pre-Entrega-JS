@@ -164,7 +164,7 @@ function addToCart(productId, buttonElement) {
                             <h4>${item.nombre}</h4>
                         <div class="item__detalles">
                                 <p>${item.quantity} x <span>${item.precio.toFixed(2)}</span></p>
-                                <p>$$${(item.precio * item.quantity).toFixed(2)}</p>
+                                <p>$${(item.precio * item.quantity).toFixed(2)}</p>
                             <button onclick="removeFromCart(${item.id})">
                                 <i class="ri-close-line"></i>
                             </button>
