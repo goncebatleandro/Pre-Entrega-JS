@@ -193,5 +193,78 @@ function addToCart(productId, buttonElement) {
         const totalItems = cart.reduce((acc,item) => acc + item.quantity, 0);
         cartHeader.textContent = `Tu carrito (${totalItems})`;
     }
+
+// 9
+    function mostrarModalPedido() {
+        const pedidoDetalle = document.querySelector(".pedido__detalle");
+        pedidoDetalle.innerHTML = '';
+
+        let total = 0;
+
+
+        cart.forEach(item => {
+            total += item.precio * item.quantity;
+
+            const detalleItem = document.createElement('div');
+            detalleItem.classList.add('detalle__item');
+            detalleItem.innerHTML = `
+                <div class="item__pedido">
+                    <div class="pedido__img">
+                        <img src="${item.imagen}" alt="${item.nombre}">
+                </div>
+                    <div class="pedido__lista">
+                    <p>${item.nombre}</p>
+                    <p>${item.quantity} x <span>$${(item.precio).toFixed(2)}</span></p>
+                </div>
+                    <p>$${((item.precio).toFixed(2) * item.quantity).toFixed(2)}</p>
+                </div>
+            `;
+            pedidoDetalle.appendChild(detalleItem);
+        });
+
+        const totalElement = document.createElement('div');
+        totalElement.classList.add('pedido__total');
+        totalElement.innerHTML = `
+            <h4>Total:</h4>
+            <h4>$${total.toFixed(2)}</h4>
+        `;
+        pedidoDetalle.appendChild(totalElement);
+
+        document.getElementById('overlay').classList.add('active');
+        document.getElementById('modal-pedido').classList.add('active');
+
+
+    }
+
+// 10
+
+    function cerrarModalPedido () {
+        document.getElementById('overlay').classList.remove('active');
+        document.getElementById('modal-pedido').classList.remove('active');
+
+        const cardImages = document.querySelectorAll('.card__img.active');
+        cardImages.forEach(cardImg => {
+            cardImg.classList.remove('active');
+        });
+
+        const cantidadContainers = document.querySelectorAll('.card__cantidad');
+        cantidadContainers.forEach(cantidadContainers => {
+            cantidadContainer.querySelector('.cantidad__numero').textContent = '1';
+            cantidadContainer.style.display = 'none';
+
+            const addToCartButton = cantidadContainer.previousElementSibling;
+            if (addToCartButton.classList.contains('card__btn-shop')) {
+                addToCartButton.style.display = 'block';
+            }
+        });
+
+        const cartHeader = document.querySelector('.cart-list h2');
+        cartHeader.textContent = 'Tu carrito (0)';
+
+        cart.length = 0;
+        displayCart();
+    }
+
+document.getElementById('btn-close').addEventListener('click', cerrarModalPedido);
 // 
 loadProducts();
